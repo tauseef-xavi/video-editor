@@ -3,11 +3,24 @@ from editor.base.operation import EditOperation
 from editor.base.stream_operation import StreamOperation
 from editor.graph.filter_graph import FilterGraph
 from editor.graph.runner import FFmpegRunner
-from editor.operations.flip import FlipOperation
-from editor.operations.pip import PictureInPictureOperation
-from editor.operations.text_overlay import TextOverlayOperation
-from editor.operations.trim import TrimOperation
-from editor.operations.volume import VolumeOperation
+from editor.operations import (
+    BlurOperation,
+    BrightnessOperation,
+    FadeInOperation,
+    FadeOutOperation,
+    FlipOperation,
+    GrayscaleOperation,
+    PictureInPictureOperation,
+    SaturationOperation,
+    SepiaOperation,
+    SharpenOperation,
+    SimpleVideoEffect,
+    SpeedOperation,
+    TextOverlayOperation,
+    TrimOperation,
+    VignetteOperation,
+    VolumeOperation,
+)
 from editor.pipeline import EditorPipeline
 from editor.registry import REGISTRY, schemas
 from editor.utils import check_ffmpeg
@@ -16,6 +29,7 @@ __all__ = [
     "EditOperation",
     "StreamOperation",
     "FilterOperation",
+    "SimpleVideoEffect",
     "FilterGraph",
     "FFmpegRunner",
     "TrimOperation",
@@ -23,6 +37,16 @@ __all__ = [
     "VolumeOperation",
     "TextOverlayOperation",
     "PictureInPictureOperation",
+    "GrayscaleOperation",
+    "SepiaOperation",
+    "BrightnessOperation",
+    "SaturationOperation",
+    "BlurOperation",
+    "SharpenOperation",
+    "VignetteOperation",
+    "SpeedOperation",
+    "FadeInOperation",
+    "FadeOutOperation",
     "EditorPipeline",
     "REGISTRY",
     "schemas",

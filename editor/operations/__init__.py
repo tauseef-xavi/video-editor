@@ -1,3 +1,16 @@
+from editor.operations.effects import (
+    BlurOperation,
+    BrightnessOperation,
+    FadeInOperation,
+    FadeOutOperation,
+    GrayscaleOperation,
+    SaturationOperation,
+    SepiaOperation,
+    SharpenOperation,
+    SimpleVideoEffect,
+    SpeedOperation,
+    VignetteOperation,
+)
 from editor.operations.flip import FlipOperation
 from editor.operations.pip import PictureInPictureOperation
 from editor.operations.text_overlay import TextOverlayOperation
@@ -10,4 +23,15 @@ __all__ = [
     "VolumeOperation",
     "TextOverlayOperation",
     "PictureInPictureOperation",
+    "SimpleVideoEffect",
+    "GrayscaleOperation",
+    "SepiaOperation",
+    "BrightnessOperation",
+    "SaturationOperation",
+    "BlurOperation",
+    "SharpenOperation",
+    "VignetteOperation",
+    "SpeedOperation",
+    "FadeInOperation",
+    "FadeOutOperation",
 ]
