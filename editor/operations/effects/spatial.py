@@ -46,13 +46,28 @@ class SharpenOperation(SimpleVideoEffect):
 
 
 @dataclass
-class VignetteOperation(SimpleVideoEffect):
-    """Darkens the corners to draw focus towards the centre."""
+class VignetteOperation(FilterOperation):
+    """Darkens the corners to draw focus towards the centre.
 
-    @classmethod
-    def filter_string(cls) -> str:
-        return "vignette"
+    Args:
+        angle: Falloff radius in radians. Range 0.0–PI/2 (~1.57).
+               Higher values produce a stronger, tighter vignette.
+               Default: 1.0 (moderate).
+    """
+
+    angle: float = 1.0
+
+    def add_to_graph(self, graph: FilterGraph, video_in: str, audio_in: str) -> tuple[str, str]:
+        out = graph.next_pad("v")
+        graph.add_node(f"{video_in}vignette=angle={self.angle}{out}")
+        return out, audio_in
 
     @classmethod
     def schema(cls) -> dict[str, Any]:
-        return {"name": "vignette", "label": "Vignette", "params": []}
+        return {
+            "name": "vignette",
+            "label": "Vignette",
+            "params": [
+                {"name": "angle", "type": "float", "label": "Strength", "default": 1.0, "min": 0.0, "max": 1.5708},
+            ],
+        }
