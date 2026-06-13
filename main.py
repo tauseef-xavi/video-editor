@@ -1,20 +1,43 @@
 #!/usr/bin/env python3
+import os
 import tempfile
 from pathlib import Path
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from downloader.youtube import YouTubeDownloader
 from editor import (
     EditorPipeline,
-    FadeInOperation,
-    GrayscaleOperation,
-    SepiaOperation,
+    PixelizeOperation,
+    PosterizeOperation,
     TrimOperation,
-    VignetteOperation,
     check_ffmpeg,
 )
 
-URL = "https://www.youtube.com/watch?v=<VIDEO_ID>"
-OUTPUT = Path("output.mp4")
+URL = os.environ["VIDEO_URL"]
+START = "0:10"
+END = "0:40"
+
+# Each entry: (output filename, filter operations applied after trim)
+VARIANTS = [
+    # ("output_sepia_vignette.mp4", [
+    #     SepiaOperation(),
+    #     VignetteOperation(angle=1.5),
+    #     FadeInOperation(duration=1.5),
+    # ]),
+    # ("output_edge_detect.mp4", [
+    #     GrayscaleOperation(),
+    #     EdgeDetectOperation(low=0.1, high=0.4),
+    # ]),
+    ("output_posterize.mp4", [
+        PosterizeOperation(colors=16),
+    ]),
+    ("output_pixelize.mp4", [
+        PixelizeOperation(width=16, height=16),
+    ]),
+]
 
 
 def main():
@@ -24,15 +47,16 @@ def main():
         source = Path(tmpdir) / "source.mp4"
         YouTubeDownloader().download(URL, source)
 
-        EditorPipeline([
-            TrimOperation(start="0:10", end="0:40"),
-            GrayscaleOperation(),
-            SepiaOperation(),
-            FadeInOperation(duration=1.5),
-            VignetteOperation(angle=1.5),
-        ]).run(source, OUTPUT)
+        trimmed = Path(tmpdir) / "trimmed.mp4"
+        EditorPipeline([TrimOperation(START, END)]).run(source, trimmed)
 
-    print(f"Done → {OUTPUT}")
+        for filename, filter_ops in VARIANTS:
+            print(f"\n--- {filename} ---")
+            EditorPipeline(filter_ops).run(trimmed, Path(filename))
+
+    print("\nAll outputs ready:")
+    for filename, _ in VARIANTS:
+        print(f"  {filename}")
 
 
 if __name__ == "__main__":
