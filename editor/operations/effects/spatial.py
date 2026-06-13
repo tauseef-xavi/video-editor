@@ -33,6 +33,93 @@ class BlurOperation(FilterOperation):
 
 
 @dataclass
+class EdgeDetectOperation(FilterOperation):
+    """Traces edges in the video, producing a sketch-like outline effect.
+
+    Args:
+        low:  Low threshold for edge detection (0.0–1.0). Default: 0.1.
+        high: High threshold for edge detection (0.0–1.0). Default: 0.4.
+    """
+
+    low: float = 0.1
+    high: float = 0.4
+
+    def add_to_graph(self, graph: FilterGraph, video_in: str, audio_in: str) -> tuple[str, str]:
+        out = graph.next_pad("v")
+        graph.add_node(f"{video_in}edgedetect=low={self.low}:high={self.high}{out}")
+        return out, audio_in
+
+    @classmethod
+    def schema(cls) -> dict[str, Any]:
+        return {
+            "name": "edge_detect",
+            "label": "Edge Detect",
+            "params": [
+                {"name": "low", "type": "float", "label": "Low threshold", "default": 0.1, "min": 0.0, "max": 1.0},
+                {"name": "high", "type": "float", "label": "High threshold", "default": 0.4, "min": 0.0, "max": 1.0},
+            ],
+        }
+
+
+@dataclass
+class PosterizeOperation(FilterOperation):
+    """Reduces the colour palette to a fixed number of colours for a flat, graphic look.
+
+    Uses ffmpeg's elbg filter (ELBG algorithm), the modern posterize equivalent.
+
+    Args:
+        colors: Number of colours in the output palette (2–256). Lower values
+                produce a more extreme effect. Default: 16.
+    """
+
+    colors: int = 16
+
+    def add_to_graph(self, graph: FilterGraph, video_in: str, audio_in: str) -> tuple[str, str]:
+        out = graph.next_pad("v")
+        graph.add_node(f"{video_in}elbg=codebook_length={self.colors}{out}")
+        return out, audio_in
+
+    @classmethod
+    def schema(cls) -> dict[str, Any]:
+        return {
+            "name": "posterize",
+            "label": "Posterize",
+            "params": [
+                {"name": "colors", "type": "int", "label": "Colors", "default": 16, "min": 2, "max": 256},
+            ],
+        }
+
+
+@dataclass
+class PixelizeOperation(FilterOperation):
+    """Pixelates the video into a mosaic of large blocks.
+
+    Args:
+        width:  Block width in pixels. Default: 16.
+        height: Block height in pixels. Default: 16.
+    """
+
+    width: int = 16
+    height: int = 16
+
+    def add_to_graph(self, graph: FilterGraph, video_in: str, audio_in: str) -> tuple[str, str]:
+        out = graph.next_pad("v")
+        graph.add_node(f"{video_in}pixelize=width={self.width}:height={self.height}{out}")
+        return out, audio_in
+
+    @classmethod
+    def schema(cls) -> dict[str, Any]:
+        return {
+            "name": "pixelize",
+            "label": "Pixelize",
+            "params": [
+                {"name": "width", "type": "int", "label": "Block width", "default": 16, "min": 2, "max": 256},
+                {"name": "height", "type": "int", "label": "Block height", "default": 16, "min": 2, "max": 256},
+            ],
+        }
+
+
+@dataclass
 class SharpenOperation(SimpleVideoEffect):
     """Sharpens edges using an unsharp mask with sensible defaults."""
 
